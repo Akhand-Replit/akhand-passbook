@@ -79,8 +79,8 @@ def check_password():
                 st.session_state["password_correct"] = False
 
     # Add title and description
-    st.title("Akhand App")
-    st.markdown("**Description:** Where you have all of your Apps")
+    st.title("Akhand Passbook")
+    st.markdown("**Access all of the accounts & Password**")
     # First run: show password input and login button
     if "password_correct" not in st.session_state:
         with st.form(key="login_form"):
