@@ -78,50 +78,40 @@ def check_password():
             else:
                 st.session_state["password_correct"] = False
 
-    # First run: show password input and login button
     if "password_correct" not in st.session_state:
-        with st.form(key="login_form_initial"):  # Unique key for initial form
-            st.text_input(
-                "Password", 
-                type="password", 
-                key="password", 
-                placeholder="Enter your access code"
-            )
-            submitted = st.form_submit_button("Login")
-            if submitted:
-                password_entered()
+        st.text_input(
+            "Password", 
+            type="password", 
+            key="password", 
+            on_change=password_entered,
+            placeholder="Enter your access code"
+        )
         return False
-
-    # Incorrect password: show input again with error and login button
     elif not st.session_state["password_correct"]:
-        with st.form(key="login_form_retry"):  # Unique key for retry form
-            st.text_input(
-                "Password", 
-                type="password", 
-                key="password", 
-                placeholder="Try again"
-            )
-            submitted = st.form_submit_button("Login")
-            if submitted:
-                password_entered()
+        st.text_input(
+            "Password", 
+            type="password", 
+            key="password", 
+            on_change=password_entered,
+            placeholder="Try again"
+        )
         st.error("Incorrect password. Please try again.")
         return False
-
-    # Correct password: return True to proceed
     else:
         return True
 
-# MAIN APP LOGIC - SINGLE CHECK
+# Main app logic
 if check_password():
-    # Sidebar logout button
+    # Logout button in sidebar
     with st.sidebar:
         st.markdown("---")
         if st.button("🚪 Log Out", key="logout_btn", help="Click to log out of the system"):
+            # Clear authentication credentials
             st.session_state["password_correct"] = False
             st.rerun()
-
+    
     # Main content
-    st.title("Akhand Passbook")
+    st.title("Akhand Unified Portal")
     st.markdown('<h2 class="gradient-header">Application Gateway</h2>', unsafe_allow_html=True)
     
     # First row of cards
