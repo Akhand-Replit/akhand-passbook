@@ -40,7 +40,9 @@ def init_db():
 def check_password():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
-    
+        # Add title here
+        st.title("Akhand Passbook")
+        st.write("**Access all of the accounts & passwords**")
     if not st.session_state.authenticated:
         password = st.text_input("Enter Password:", type="password")
         if st.button("Login"):
