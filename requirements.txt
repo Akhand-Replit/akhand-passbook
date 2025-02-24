@@ -1,4 +1,6 @@
 # requirements.txt
-streamlit==1.31.0
+streamlit==1.29.0
+pandas==2.1.4
+sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
-python-dotenv==1.0.0
+cryptography==41.0.5
