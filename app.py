@@ -42,6 +42,8 @@ def check_password():
         st.session_state.authenticated = False
     
     if not st.session_state.authenticated:
+        st.title("Akhand Passbook")
+        st.write("Please enter your password to access the application.")
         password = st.text_input("Enter Password:", type="password")
         if st.button("Login"):
             try:
