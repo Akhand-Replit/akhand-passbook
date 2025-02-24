@@ -74,42 +74,50 @@ def check_password():
         if "PASSWORD" in st.secrets and "password" in st.session_state:
             if st.session_state["password"] == st.secrets.PASSWORD:
                 st.session_state["password_correct"] = True
-                del st.session_state["password"]
+                del st.session_state["password"]  # Don't store the password
             else:
                 st.session_state["password_correct"] = False
 
+    # First run: show password input and login button
     if "password_correct" not in st.session_state:
-        st.text_input(
-            "Password", 
-            type="password", 
-            key="password", 
-            on_change=password_entered,
-            placeholder="Enter your access code"
-        )
+        with st.form(key="login_form"):
+            st.text_input(
+                "Password", 
+                type="password", 
+                key="password", 
+                placeholder="Enter your access code"
+            )
+            if st.form_submit_button("Login"):
+                password_entered()
         return False
+
+    # Incorrect password: show input again with error and login button
     elif not st.session_state["password_correct"]:
-        st.text_input(
-            "Password", 
-            type="password", 
-            key="password", 
-            on_change=password_entered,
-            placeholder="Try again"
-        )
+        with st.form(key="retry_form"):
+            st.text_input(
+                "Password", 
+                type="password", 
+                key="password", 
+                placeholder="Try again"
+            )
+            if st.form_submit_button("Login"):
+                password_entered()
         st.error("Incorrect password. Please try again.")
         return False
+
+    # Correct password: return True to proceed
     else:
         return True
 
-# Main app logic
+# Main app logic - SINGLE CHECK
 if check_password():
-    # Logout button in sidebar
+    # Sidebar components
     with st.sidebar:
         st.markdown("---")
-        if st.button("🚪 Log Out", key="logout_btn", help="Click to log out of the system"):
-            # Clear authentication credentials
+        if st.button("🚪 Log Out", key="logout_btn"):
             st.session_state["password_correct"] = False
             st.rerun()
-    
+
     # Main content
     st.title("Akhand Unified Portal")
     st.markdown('<h2 class="gradient-header">Application Gateway</h2>', unsafe_allow_html=True)
