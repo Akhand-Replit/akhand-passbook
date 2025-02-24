@@ -78,6 +78,9 @@ def check_password():
             else:
                 st.session_state["password_correct"] = False
 
+    # Add title and description
+    st.title("Akhand App")
+    st.markdown("**Description:** Where you have all of your Apps")
     # First run: show password input and login button
     if "password_correct" not in st.session_state:
         with st.form(key="login_form"):
@@ -128,8 +131,8 @@ if check_password():
     with col1:
         st.markdown("""
         <div class="card">
-            <div class="card-title">🌍 Public Application</div>
-            <div class="card-description">Open access platform for general users</div>
+            <div class="card-title">Akhand Data</div>
+            <div class="card-description">Access Voter Data</div>
             <a href="https://akhand.streamlit.app/" target="_blank" style="text-decoration:none;">
                 <button style="
                     background: linear-gradient(45deg, #6366f1, #8b5cf6);
@@ -151,8 +154,8 @@ if check_password():
     with col2:
         st.markdown("""
         <div class="card">
-            <div class="card-title">🔒 Private Application</div>
-            <div class="card-description">Restricted access for authorized users</div>
+            <div class="card-title">Akhand People/div>
+            <div class="card-description">Selected People Database</div>
             <a href="https://akhand-selected-people.streamlit.app/" target="_blank" style="text-decoration:none;">
                 <button style="
                     background: linear-gradient(45deg, #10b981, #059669);
@@ -177,8 +180,8 @@ if check_password():
     with col3:
         st.markdown("""
         <div class="card">
-            <div class="card-title">📘 Passbook Application</div>
-            <div class="card-description">Access your passbook and transaction history</div>
+            <div class="card-title">Passbook Application</div>
+            <div class="card-description">Access your passbook and accounts history</div>
             <a href="https://akhand-passbook.streamlit.app/" target="_blank" style="text-decoration:none;">
                 <button style="
                     background: linear-gradient(45deg, #f59e0b, #d97706);
@@ -200,9 +203,9 @@ if check_password():
     with col4:
         st.markdown("""
         <div class="card">
-            <div class="card-title">📊 Analytics Application</div>
-            <div class="card-description">View detailed analytics and reports</div>
-            <a href="https://akhand-analytics.streamlit.app/" target="_blank" style="text-decoration:none;">
+            <div class="card-title">Coming Soon</div>
+            <div class="card-description">Various Feature coming soon</div>
+            <a href="#" target="_blank" style="text-decoration:none;">
                 <button style="
                     background: linear-gradient(45deg, #8b5cf6, #7c3aed);
                     color: white;
