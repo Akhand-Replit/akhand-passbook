@@ -1,6 +1,8 @@
-# requirements.txt
-streamlit==1.29.0
-pandas==2.1.4
-sqlalchemy==2.0.23
-psycopg2-binary==2.9.9
-cryptography==41.0.5
+# secrets.toml
+[postgres]
+PGHOST = "ep-square-bird-a82jkbqj-pooler.eastus2.azure.neon.tech"
+PGDATABASE = "neondb"
+PGUSER = "neondb_owner"
+PGPASSWORD = "npg_Bi5bnFsPC7Lf"
+
+APP_PASSWORD = "Akhand"
