@@ -58,7 +58,42 @@ def check_password():
 # Custom CSS
 st.markdown("""
 <style>
-/* Previous CSS styles remain the same */
+.card {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 15px 0;
+    transition: 0.3s;
+    background: white;
+    border: 1px solid #e0e0e0;
+}
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.card-title {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+.card-content p {
+    margin: 8px 0;
+    color: #34495e;
+}
+.button-group {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+.status-active { color: #27ae60; }
+.status-deactivated { color: #e74c3c; }
+.status-onhold { color: #f1c40f; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -67,11 +102,120 @@ def logout_button():
         st.session_state.authenticated = False
         st.rerun()
 
-# Edit/Delete functions (from previous implementation)
-# [Keep the edit_form and delete_record functions here]
+# Edit Record Form
+def edit_form(cred):
+    with st.form(key=f"edit_{cred.website_name}"):
+        st.write("### Edit Record")
+        new_data = {
+            "website_name": st.text_input("Website Name", value=cred.website_name),
+            "website_link": st.text_input("Website Link", value=cred.website_link),
+            "username": st.text_input("Username", value=cred.username),
+            "password": st.text_input("Password", value=cred.password, type="password"),
+            "supervised_email": st.text_input("Email", value=cred.supervised_email),
+            "supervised_phone": st.text_input("Phone", value=cred.supervised_phone),
+            "auth_reference": st.text_input("Auth Reference", value=cred.auth_reference),
+            "status": st.selectbox("Status", ["Active", "Deactivated", "On Hold"], 
+                                index=["Active", "Deactivated", "On Hold"].index(cred.status)),
+            "description": st.text_area("Description", value=cred.description)
+        }
+        
+        if st.form_submit_button("Save Changes"):
+            Session = init_db()
+            session = Session()
+            try:
+                session.query(Credential).filter_by(website_name=cred.website_name).update(new_data)
+                session.commit()
+                st.success("Record updated successfully!")
+                session.close()
+                st.rerun()
+            except Exception as e:
+                session.rollback()
+                st.error(f"Error updating record: {e}")
+            finally:
+                session.close()
 
-# Search Page (from previous implementation)
-# [Keep the search_page function here]
+# Delete Record
+def delete_record(website_name):
+    Session = init_db()
+    session = Session()
+    try:
+        session.query(Credential).filter_by(website_name=website_name).delete()
+        session.commit()
+        st.success("Record deleted successfully!")
+        st.rerun()
+    except Exception as e:
+        session.rollback()
+        st.error(f"Error deleting record: {e}")
+    finally:
+        session.close()
+
+# Search Page
+def search_page():
+    st.header("Advanced Search")
+    with st.form(key="search_form"):
+        col1, col2 = st.columns(2)
+        with col1:
+            website_name = st.text_input("Website Name")
+            supervised_email = st.text_input("Supervised Email")
+        with col2:
+            username = st.text_input("Username")
+            supervised_phone = st.text_input("Supervised Phone Number")
+        
+        if st.form_submit_button("Search"):
+            Session = init_db()
+            session = Session()
+            try:
+                query = session.query(Credential)
+                
+                filters = {
+                    "website_name": website_name,
+                    "username": username,
+                    "supervised_email": supervised_email,
+                    "supervised_phone": supervised_phone
+                }
+                
+                for field, value in filters.items():
+                    if value:
+                        query = query.filter(getattr(Credential, field).ilike(f"%{value}%"))
+                
+                st.session_state.search_results = query.all()
+            finally:
+                session.close()
+    
+    if 'search_results' in st.session_state and st.session_state.search_results:
+        for cred in st.session_state.search_results:
+            with st.container():
+                st.markdown(f"""
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">{cred.website_name}</h3>
+                        <span class="status-{cred.status.lower()}">● {cred.status}</span>
+                    </div>
+                    <div class="card-content">
+                        <p>URL: <a href="{cred.website_link}" target="_blank">{cred.website_link}</a></p>
+                        <p>Username: {cred.username}</p>
+                        <p>Password: {cred.password}</p>
+                        <p>Email: {cred.supervised_email or 'N/A'}</p>
+                        <p>Phone: {cred.supervised_phone or 'N/A'}</p>
+                        <p>Auth Reference: {cred.auth_reference or 'N/A'}</p>
+                        <p>Description: {cred.description or 'N/A'}</p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                col1, col2 = st.columns([1, 6])
+                with col1:
+                    if st.button(f"Edit {cred.website_name}", key=f"edit_{cred.website_name}"):
+                        st.session_state.editing = cred.website_name
+                with col2:
+                    if st.button(f"Delete {cred.website_name}", key=f"delete_{cred.website_name}"):
+                        delete_record(cred.website_name)
+                
+                if 'editing' in st.session_state and st.session_state.editing == cred.website_name:
+                    edit_form(cred)
+                    if st.button("Cancel Edit"):
+                        del st.session_state.editing
+                        st.rerun()
 
 # Data Entry Page
 def data_entry_page():
